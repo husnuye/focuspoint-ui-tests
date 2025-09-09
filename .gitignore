@@ -1,10 +1,25 @@
+# Build outputs
 bin/
 obj/
 TestResults/
+
+# Allure artifacts
 allure-results/
 allure-report/
+
+# Local config (do not commit real secrets)
+Config/appsettings.json
+
+# IDE/editor settings
 .vscode/
+.vs/
+.idea/
+
+# User/solution state files
 *.user
 *.suo
-# gizli yapılandırma
-Config/appsettings.json
+*.userosscache
+*.sln.docstates
+
+# macOS/system files
+.DS_Store
