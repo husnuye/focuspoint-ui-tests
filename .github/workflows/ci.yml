@@ -1,0 +1,38 @@
+name: CI - WebTests
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Install dependencies
+        run: dotnet restore ./WebTests/WebTests.csproj
+
+      - name: Build project
+        run: dotnet build ./WebTests/WebTests.csproj --no-restore --configuration Release
+
+      - name: Install Playwright Browsers
+        run: pwsh ./WebTests/bin/Release/net9.0/playwright.ps1 install
+
+      - name: Run tests with Allure
+        run: dotnet test ./WebTests/WebTests.csproj --logger:"trx;LogFileName=test_results.trx"
+
+      - name: Upload Allure Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: allure-results
+          path: WebTests/bin/Release/net9.0/allure-results

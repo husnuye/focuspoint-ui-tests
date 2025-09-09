@@ -1,0 +1,10 @@
+bin/
+obj/
+TestResults/
+allure-results/
+allure-report/
+.vscode/
+*.user
+*.suo
+# gizli yapılandırma
+Config/appsettings.json

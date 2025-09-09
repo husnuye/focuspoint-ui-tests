@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RunSettings>
+  <RunConfiguration>
+    <!-- test host bağlantı zaman aşımı (ms) -->
+    <TestSessionTimeout>300000</TestSessionTimeout>
+
+    <!-- VSTest/TRX çıktıları (Allure değil) -->
+    <ResultsDirectory>TestResults</ResultsDirectory>
+  </RunConfiguration>
+
+  <EnvironmentVariables>
+    <!-- Allure.Net.Commons bu değişkeni okur -->
+    <ALLURE_RESULTS_DIRECTORY>./bin/Debug/net9.0/allure-results</ALLURE_RESULTS_DIRECTORY>
+    <!-- yavaş makine için bağlantı süresi -->
+    <VSTEST_CONNECTION_TIMEOUT>300000</VSTEST_CONNECTION_TIMEOUT>
+  </EnvironmentVariables>
+</RunSettings>
