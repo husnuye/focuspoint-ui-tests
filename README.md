@@ -1,4 +1,4 @@
-# 🧪 WebTests – Playwright E2E Automation
+#  WebTests – Playwright E2E Automation
 
 ## 1. 📖 Project Description
 End-to-End UI Test Automation project built with **C#**, **Playwright**, **NUnit**, and **Allure Reporting**.  
