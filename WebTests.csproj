@@ -8,42 +8,58 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
+  <!-- Test & tooling dependencies -->
   <ItemGroup>
+    <!-- Allure reporting (runtime + NUnit integration) -->
     <PackageReference Include="Allure.Net.Commons" Version="2.12.1" />
-    <PackageReference Include="Allure.NUnit" Version="2.12.1" />
-    <PackageReference Include="ClosedXML" Version="0.105.0" />
-    <PackageReference Include="coverlet.collector" Version="6.0.2" />
-    <PackageReference Include="EPPlus" Version="7.0.9" />
-    <PackageReference Include="log4net" Version="3.2.0" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Binder" Version="9.0.8" />
+    <PackageReference Include="Allure.NUnit"        Version="2.12.1" />
+
+    <!-- Data & utilities -->
+    <PackageReference Include="ClosedXML"                               Version="0.105.0" />
+    <PackageReference Include="EPPlus"                                  Version="7.0.9" />
+    <PackageReference Include="log4net"                                 Version="3.2.0" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Binder"               Version="9.0.8" />
     <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables" Version="9.0.8" />
-    <PackageReference Include="Microsoft.Extensions.Configuration.Json" Version="9.0.8" />
+    <PackageReference Include="Microsoft.Extensions.Configuration.Json"                 Version="9.0.8" />
+
+    <!-- Test runner & analyzers -->
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
-    <PackageReference Include="Microsoft.Playwright" Version="1.55.0" />
-    <PackageReference Include="Microsoft.Playwright.NUnit" Version="1.55.0" />
-    <PackageReference Include="NUnit" Version="4.4.0" />
-    <PackageReference Include="NUnit.Analyzers" Version="4.4.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="5.1.0" />
+    <PackageReference Include="NUnit"                  Version="4.4.0" />
+    <PackageReference Include="NUnit3TestAdapter"      Version="5.1.0" />
+    <PackageReference Include="NUnit.Analyzers"        Version="4.4.0" />
+
+    <!-- Playwright + NUnit glue -->
+    <PackageReference Include="Microsoft.Playwright"        Version="1.55.0" />
+    <PackageReference Include="Microsoft.Playwright.NUnit"  Version="1.55.0" />
+    
+    <!-- Optional: coverage collector (kept as-is) -->
+    <PackageReference Include="coverlet.collector" Version="6.0.2" />
   </ItemGroup>
 
+  <!-- Global using for NUnit attributes/assertions -->
   <ItemGroup>
     <Using Include="NUnit.Framework" />
   </ItemGroup>
 
+  <!-- Copy runtime assets to output (bin/.../net9.0) -->
   <ItemGroup>
-  <None Update="Config\appsettings.json">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </None>
-  <None Update="Config\appsettings.*.json">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </None>
-  <None Update="Resources\**\*.*">
-    <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-  </None>
-</ItemGroup>
+    <!-- App settings (keep real secrets out of git; this just copies local files to output) -->
+    <None Update="Config/appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Config/appsettings.*.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
 
-<ItemGroup>
-  <None Include="TestData/SearchData.xlsx" CopyToOutputDirectory="PreserveNewest" />
-</ItemGroup>
+    <!-- Test data files (Excel, etc.) -->
+    <None Update="TestData/**">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+
+    <!-- Any additional resources if you add later -->
+    <None Update="Resources/**">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
 
 </Project>

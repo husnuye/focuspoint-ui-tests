@@ -1,17 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RunSettings>
   <RunConfiguration>
-    <!-- test host bağlantı zaman aşımı (ms) -->
+    <!-- Increase testhost connection timeout (ms) to avoid slow-run flakiness -->
     <TestSessionTimeout>300000</TestSessionTimeout>
 
-    <!-- VSTest/TRX çıktıları (Allure değil) -->
+    <!-- VSTest/TRX output directory (not Allure) -->
     <ResultsDirectory>TestResults</ResultsDirectory>
   </RunConfiguration>
 
   <EnvironmentVariables>
-    <!-- Allure.Net.Commons bu değişkeni okur -->
-    <ALLURE_RESULTS_DIRECTORY>./bin/Debug/net9.0/allure-results</ALLURE_RESULTS_DIRECTORY>
-    <!-- yavaş makine için bağlantı süresi -->
+    <!-- Allure.Net.Commons reads this directory; keep it configuration/TFM agnostic -->
+    <ALLURE_RESULTS_DIRECTORY>./allure-results</ALLURE_RESULTS_DIRECTORY>
+
+    <!-- Extra safety for slow runners (ms) -->
     <VSTEST_CONNECTION_TIMEOUT>300000</VSTEST_CONNECTION_TIMEOUT>
+
+    <!-- Optional: reduce noise/telemetry on CI -->
+    <DOTNET_CLI_TELEMETRY_OPTOUT>1</DOTNET_CLI_TELEMETRY_OPTOUT>
   </EnvironmentVariables>
 </RunSettings>

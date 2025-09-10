@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Playwright;
 using NUnit.Framework;
-using Allure.Net.Commons; // AllureApi için
+using Allure.Net.Commons; // For AllureApi
 
 namespace WebTests.Core;
 
@@ -16,7 +16,7 @@ public abstract class TestBase
     protected IBrowserContext  Ctx     = default!;
     protected IPage            Page    = default!;
 
-    // Allure çıktısı nereye yazılacak? (ENV > appsettings > varsayılan)
+    // Where to write Allure results (resolution order: ENV -> appsettings -> fallback).
     protected string AllureOut =>
         Environment.GetEnvironmentVariable("ALLURE_RESULTS_DIRECTORY")
         ?? Config.GetValue<string>("OutputDir")
@@ -25,7 +25,7 @@ public abstract class TestBase
     [OneTimeSetUp]
     public async Task GlobalSetup()
     {
-        // 1) Konfig yükle
+        // 1) Load configuration
         Config = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("Config/appsettings.json", optional: false, reloadOnChange: true)
@@ -33,10 +33,10 @@ public abstract class TestBase
             .AddEnvironmentVariables()
             .Build();
 
-        // 2) Playwright başlat
+        // 2) Start Playwright (browser/context/page)
         (PW, Browser, Ctx, Page) = await PlaywrightFactory.CreateAsync(Config);
 
-        // 3) Tracing aç (varsa görmezden gel)
+        // 3) Enable Playwright tracing (ignore if already started)
         try
         {
             await Ctx.Tracing.StartAsync(new()
@@ -51,13 +51,14 @@ public abstract class TestBase
             TestContext.WriteLine("[TRACE] Tracing already started, continuing.");
         }
 
+        // Ensure the Allure output directory exists
         Directory.CreateDirectory(AllureOut);
     }
 
     [TearDown]
     public async Task AfterEach()
     {
-        // Test FAIL ise ekran görüntüsü al ve Allure'a ekle
+        // If the test failed, capture artifacts and attach them to NUnit + Allure
         if (TestContext.CurrentContext.Result.Outcome.Status == NUnit.Framework.Interfaces.TestStatus.Failed)
         {
             try
@@ -68,13 +69,13 @@ public abstract class TestBase
                     var bytes = await Page.ScreenshotAsync(new() { FullPage = true });
                     await File.WriteAllBytesAsync(pngPath, bytes);
 
-                    // NUnit attachment (IDE'ler için)
+                    // Attach to NUnit (helpful in IDE / CI logs)
                     TestContext.AddTestAttachment(pngPath, "Screenshot on Failure");
 
-                    // Allure attachment (rapor için)
+                    // Attach to Allure report
                     AllureApi.AddAttachment("screenshot", "image/png", bytes);
 
-                    // İsteğe bağlı: sayfa HTML’i
+                    // (Optional) Attach current page HTML for faster root-cause analysis
                     var html = await Page.ContentAsync();
                     AllureApi.AddAttachment("page.html", "text/html", System.Text.Encoding.UTF8.GetBytes(html));
                 }
@@ -89,7 +90,7 @@ public abstract class TestBase
     [OneTimeTearDown]
     public async Task GlobalTeardown()
     {
-        // Tracing’i durdur ve Allure’a ekle (best-effort)
+        // Stop tracing and attach the trace archive (best-effort)
         try
         {
             Directory.CreateDirectory(AllureOut);
@@ -111,9 +112,9 @@ public abstract class TestBase
             TestContext.WriteLine($"[TRACE] Stop/attach failed: {ex.Message}");
         }
 
-        // Kaynakları kapat
-        try { if (Ctx      is not null) await Ctx.CloseAsync(); } catch { /* ignore */ }
-        try { if (Browser  is not null) await Browser.CloseAsync(); } catch { /* ignore */ }
+        // Dispose resources gracefully
+        try { if (Ctx     is not null) await Ctx.CloseAsync(); } catch { /* ignore */ }
+        try { if (Browser is not null) await Browser.CloseAsync(); } catch { /* ignore */ }
         try { PW?.Dispose(); } catch { /* ignore */ }
     }
 }

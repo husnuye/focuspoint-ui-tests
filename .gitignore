@@ -2,13 +2,23 @@
 bin/
 obj/
 TestResults/
+TestArtifacts/        # screenshots, videos, traces, txt outputs
 
 # Allure artifacts
 allure-results/
 allure-report/
 
+# Playwright artifacts (optional but common)
+playwright-report/
+blob-report/
+*.zip                 # e.g., trace.zip if saved to root
+*.mp4                 # videos if any end up outside TestArtifacts
+
 # Local config (do not commit real secrets)
 Config/appsettings.json
+Config/appsettings.Development.json
+# Commit only the example file:
+# Config/appsettings.sample.json
 
 # IDE/editor settings
 .vscode/
@@ -20,6 +30,18 @@ Config/appsettings.json
 *.suo
 *.userosscache
 *.sln.docstates
+
+# Coverage / tooling
+*.coverage
+*.coveragexml
+coverage/
+BenchmarkDotNet.Artifacts/
+
+# JetBrains Rider/ReSharper caches
+_ReSharper.Caches/
+
+# Logs
+*.log
 
 # macOS/system files
 .DS_Store

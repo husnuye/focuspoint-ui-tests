@@ -3,18 +3,26 @@ using Microsoft.Playwright;
 
 namespace WebTests.Pages
 {
+    /// <summary>
+    /// Page object for the Login flow.
+    /// Responsible for navigating to the login screen and submitting credentials.
+    /// </summary>
     public class LoginPage
     {
         private readonly IPage _page;
 
-        // Locators
+        // --- Locators -------------------------------------------------------
+        // Header menu → "My Account" (opens the account/login area)
         private readonly ILocator _myAccountMenu;
+        // Account submenu → "Log in"
         private readonly ILocator _loginLink;
+
+        // Login form controls
         private readonly ILocator _emailInput;
         private readonly ILocator _passwordInput;
         private readonly ILocator _loginButton;
 
-        // After-login account opener and welcome text
+        // Post-login references (kept for future use; intentionally unused)
         private readonly ILocator _accountOpener; // a.ico-account.opener
         private readonly ILocator _welcomeText;   // "Welcome, ..."
 
@@ -22,20 +30,18 @@ namespace WebTests.Pages
         {
             _page = page;
 
-            // Header menu → My account
+            // Header entry points
             _myAccountMenu = _page.Locator("a.ico-account");
+            _loginLink     = _page.Locator("a.ico-login");
 
-            // Submenu → Log in
-            _loginLink = _page.Locator("a.ico-login");
-
-            // Login form
-            _emailInput = _page.Locator("#Email");
+            // Login form fields
+            _emailInput    = _page.Locator("#Email");
             _passwordInput = _page.Locator("#Password");
-            _loginButton = _page.Locator("button.login-button");
+            _loginButton   = _page.Locator("button.login-button");
         }
 
         /// <summary>
-        /// Navigates to login screen by opening My Account > Log in.
+        /// Navigates to the login screen by opening: My Account → Log in.
         /// </summary>
         public async Task GoToLoginAsync()
         {
@@ -44,34 +50,37 @@ namespace WebTests.Pages
         }
 
         /// <summary>
-        /// Performs login with provided credentials.
+        /// Submits the login form with the provided credentials.
         /// </summary>
         public async Task LoginAsync(string email, string password)
         {
             await _emailInput.FillAsync(email);
             await _passwordInput.FillAsync(password);
-            // wait
+
+            // Give any client-side validation/async hooks a brief moment.
             await _page.WaitForTimeoutAsync(3000);
+
             await _loginButton.ClickAsync();
         }
 
         /// <summary>
-        /// Verifies login success 
+        /// Verifies that login has succeeded by asserting the account opener
+        /// element is visible in the header within a short timeout.
         /// </summary>
         public async Task<bool> IsLoginSuccessfulAsync()
         {
             try
             {
-                // Sadece header’daki "a.ico-account.opener" elementini bekle
+                // Wait only for the header account opener to become visible.
                 await _page.WaitForSelectorAsync(
                     "a.ico-account.opener",
                     new() { State = WaitForSelectorState.Visible, Timeout = 5000 }
                 );
-                return true;  // Göründü → login başarılı
+                return true; // Visible → login is considered successful.
             }
             catch (TimeoutException)
             {
-                return false; // Süresinde görünmedi → login başarısız
+                return false; // Not visible in time → treat as login failure.
             }
         }
     }
