@@ -7,8 +7,7 @@ It automates critical flows such as **Login**, **Search**, **Add to Cart**, and 
 ---
 
 ## 2. 🎥 Demo Video
-👉 *(Placeholder – add your demo video link here)*  
-Example:  
+  
 [![Demo Video](image-3.png)](https://vimeo.com/manage/videos/1117441315)
 
 ---
